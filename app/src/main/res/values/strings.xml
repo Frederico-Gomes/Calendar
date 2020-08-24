@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Calendar</string>
+    <string name="LoginPageTitle">Cadastro</string>
+    <string name="full_name">Nome Completo</string>
+    <string name="user_name">Nome de Usuário</string>
+    <string name="email">Email</string>
+    <string name="password">Senha</string>
+    <string name="confirm_password">Confirme a Senha</string>
+    <string name="alredy_registred">Ja possui uma conta?</string>
+    <string name="sign_in">Entrar</string>
+    <string name="sign_up">Inscrever-se</string>
+</resources>
