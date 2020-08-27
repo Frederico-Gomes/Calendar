@@ -1,6 +1,6 @@
 package com.finalproject.calendar.models
 
-data class Alert (
+data class AlertModel (
     val importance : Int,
     val date : String,
     val alarm : String,
