@@ -6,4 +6,5 @@
     <color name="colorHigh">#FF0000</color>
     <color name="colorMedium">#ffff00 </color>
     <color name="colorLow">#0000ff </color>
+    <color name="white">#ffffff</color>
 </resources>

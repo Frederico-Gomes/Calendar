@@ -10,8 +10,26 @@
     </style>
      -->
     <style name="CalendarWeekDatText" parent="TextAppearance.AppCompat.Button">
-
         <item name="android:unfocusedMonthDateColor">#000000</item>
+    </style>
+
+    <style name="BaseInput" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:paddingHorizontal">15dp</item>
+        <item name="android:selectAllOnFocus">true</item>
+    </style>
+
+    <style name="InputText" parent="BaseInput">
+        <item name="android:layout_marginStart">24dp</item>
+        <item name="android:layout_marginTop">96dp</item>
+        <item name="android:layout_marginEnd">24dp</item>
+    </style>
+
+    <style name="InputPassword" parent="BaseInput">
+        <item name="android:layout_marginStart">24dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginEnd">24dp</item>
     </style>
 
 </resources>

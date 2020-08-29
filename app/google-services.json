@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "222615139603",
+    "firebase_url": "https://calendar-937a3.firebaseio.com",
+    "project_id": "calendar-937a3",
+    "storage_bucket": "calendar-937a3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222615139603:android:c2ea4c49d8129b438a16e6",
+        "android_client_info": {
+          "package_name": "com.finalproject.calendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222615139603-rk2435gl228nqb8l6pjm02uvb6lo0p2k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAN_7U5EictF0sx9RXirVAD8j7Hg0rp05Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222615139603-rk2435gl228nqb8l6pjm02uvb6lo0p2k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
