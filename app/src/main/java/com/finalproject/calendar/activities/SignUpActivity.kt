@@ -1,5 +1,6 @@
 package com.finalproject.calendar.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -35,7 +36,6 @@ class SignUpActivity : AppCompatActivity() {
         user.email = this.email.text.toString()
         user.password = this.password.text.toString()
         user.full_name = this.full_name.text.toString()
-        user.username = this.username.text.toString()
 
         if(user.email != null && user.password != null){
             createAccount()
@@ -43,6 +43,11 @@ class SignUpActivity : AppCompatActivity() {
         else{
             Toast.makeText(baseContext, "Você deve informar todos os campos", Toast.LENGTH_LONG).show()
         }
+    }
+
+    fun navigateLoginOnClick(view: View){
+        val intent = Intent(baseContext, LoginActivity::class.java).apply {  }
+        startActivity(intent)
     }
 
     fun createAccount() {

@@ -13,28 +13,35 @@ import com.finalproject.calendar.services.LoginService
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlin.properties.Delegates
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val loginService = LoginService()
     var user: User = User()
+    var currentUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         auth = FirebaseAuth.getInstance()
+        verifyAuth()
     }
 
-    public override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
+    fun verifyAuth(){
+        currentUser = auth.currentUser
         if(currentUser != null){
             val intent = Intent(this, MainActivity::class.java).apply {
                 putExtra("user", user)
             }
             startActivity(intent)
         }
+    }
+
+    public override fun onStart() {
+        super.onStart()
 //        updateUI(currentUser)
     }
 
@@ -46,6 +53,7 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(user.email, user.password).addOnCompleteListener(this){task: Task<AuthResult> ->
                 if(task.isSuccessful){
                     Log.d("SUCCESS", "Login efetuado com sucesso")
+                    verifyAuth()
                 }
                 else{
                     Log.w("LOGIN-ERROR", "Erro ao efetuar login", task.exception)
@@ -55,11 +63,6 @@ class LoginActivity : AppCompatActivity() {
         else{
             Toast.makeText(baseContext, "Você deve informar todos os campos", Toast.LENGTH_LONG).show()
         }
-    }
-
-    fun signInOnClick(view: View){
-        val intent = Intent(baseContext, SignUpActivity::class.java).apply {  }
-        startActivity(intent)
     }
 
     fun login(){
