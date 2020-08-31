@@ -11,9 +11,6 @@ import com.finalproject.calendar.models.User
 import com.finalproject.calendar.services.LoginService
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_sign_up.*
-import kotlinx.android.synthetic.main.activity_signin.*
-import kotlinx.android.synthetic.main.activity_signin.email
-import kotlinx.android.synthetic.main.activity_signin.password
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
