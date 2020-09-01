@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="alarm_array">
+        <item name="noAlarm">Nenhum Alarme</item>
+        <item name="oneDay">Uma hora antes</item>
+        <item name="oneWeek">Uma semana antes</item>
+    </string-array>
+    <string-array name="importance_array">
+        <item name="lowImportance">Importancia baixa</item>
+        <item name="mediuImportance">Importancia media</item>
+        <item name="HighImportance">Importancia alta</item>
+    </string-array>
+</resources>

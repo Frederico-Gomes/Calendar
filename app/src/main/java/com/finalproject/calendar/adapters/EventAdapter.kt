@@ -30,7 +30,7 @@ class EventAdapter (val events : MutableList<EventModel>, var eventClickListener
                 else if(importance == medium_importance)  itemV.importance.setImageResource(mediumImportanceColor)
                 else itemV.importance.setImageResource(lowImportanceColor)
                 itemV.title.text = title
-                itemV.date.text = date
+                itemV.date.text = start
             }
 
             itemV.setOnClickListener{
