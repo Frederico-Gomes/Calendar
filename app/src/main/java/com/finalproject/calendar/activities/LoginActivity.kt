@@ -21,23 +21,11 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val loginService = LoginService()
     var user: User = User()
-    var currentUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         auth = FirebaseAuth.getInstance()
-        verifyAuth()
-    }
-
-    fun verifyAuth(){
-        currentUser = auth.currentUser
-        if(currentUser != null){
-            val intent = Intent(this, MainActivity::class.java).apply {
-                putExtra("user", user)
-            }
-            startActivity(intent)
-        }
     }
 
     public override fun onStart() {
@@ -53,31 +41,27 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(user.email, user.password).addOnCompleteListener(this){task: Task<AuthResult> ->
                 if(task.isSuccessful){
                     Log.d("SUCCESS", "Login efetuado com sucesso")
-                    verifyAuth()
+                    Toast.makeText(
+                        baseContext, "Entrou !",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    val intent = Intent(this, MainActivity::class.java).apply {
+                        putExtra("user", user)
+                    }
+                    startActivity(intent)
+                    finish()
                 }
                 else{
                     Log.w("LOGIN-ERROR", "Erro ao efetuar login", task.exception)
+                    Toast.makeText(
+                        baseContext, "Authentication failed.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
         else{
             Toast.makeText(baseContext, "Você deve informar todos os campos", Toast.LENGTH_LONG).show()
         }
-    }
-
-    fun login(){
-        if(loginService.login(user)){
-            val user = auth.currentUser
-            Toast.makeText(
-                baseContext, "Entrou !",
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            Toast.makeText(
-                baseContext, "Authentication failed.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
     }
 }

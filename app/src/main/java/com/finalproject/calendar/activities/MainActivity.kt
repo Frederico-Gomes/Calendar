@@ -1,5 +1,6 @@
 package com.finalproject.calendar.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -20,6 +21,11 @@ class MainActivity : AppCompatActivity() {
         auth.signOut()
 
         Toast.makeText(this, "Bye !", Toast.LENGTH_SHORT).show()
+    }
+
+    fun newEventNavigate(view: View){
+        val intent = Intent(this, CreateEventActivity::class.java).putExtra("isNew", true)
+        startActivity(intent)
     }
 }
 
