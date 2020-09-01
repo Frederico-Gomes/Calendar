@@ -1,21 +1,20 @@
 package com.finalproject.calendar.activities
 
 import android.content.Intent
-import android.nfc.Tag
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.finalproject.calendar.R
 import com.finalproject.calendar.models.User
 import com.finalproject.calendar.services.LoginService
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlin.properties.Delegates
+
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -25,6 +24,13 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar_login) as Toolbar
+        toolbar.setNavigationOnClickListener{view ->
+            finish()
+        }
+        setSupportActionBar(toolbar)
+
         auth = FirebaseAuth.getInstance()
     }
 
@@ -54,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
                 else{
                     Log.w("LOGIN-ERROR", "Erro ao efetuar login", task.exception)
                     Toast.makeText(
-                        baseContext, "Authentication failed.",
+                        baseContext, task.exception!!.message,
                         Toast.LENGTH_LONG
                     ).show()
                 }

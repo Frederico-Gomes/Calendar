@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.finalproject.calendar.R
+import com.finalproject.calendar.SplashActivity
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -19,6 +20,9 @@ class MainActivity : AppCompatActivity() {
     fun logoutOnClick(view: View){
         val auth = FirebaseAuth.getInstance()
         auth.signOut()
+        val intent = Intent(this, SplashActivity::class.java)
+        startActivity(intent)
+        finish()
 
         Toast.makeText(this, "Bye !", Toast.LENGTH_SHORT).show()
     }
