@@ -135,6 +135,7 @@
         android:layout_gravity="start"
         android:layout_margin="16dp"
         android:text="Salvar"
+        android:onClick="saveEvent"
         app:layout_constraintBottom_toTopOf="@id/cancelar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -145,6 +146,7 @@
     <Button
         android:id="@+id/cancelar"
         android:layout_width="match_parent"
+        android:onClick="cancelEvent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_margin="16dp"

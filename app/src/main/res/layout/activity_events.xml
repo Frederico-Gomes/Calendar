@@ -6,12 +6,7 @@
         android:orientation="vertical"
         tools:context=".activities.MainActivity">
 
-    <fragment
-            android:id="@+id/calendar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.finalproject.calendar.fragments.CalendarFragment"
-            tools:ignore="MissingConstraints"/>
+
     <fragment
             android:id="@+id/events"
             android:layout_width="match_parent"

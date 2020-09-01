@@ -1,7 +1,10 @@
 package com.finalproject.calendar.fragments
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +14,11 @@ import com.finalproject.calendar.R
 import com.finalproject.calendar.adapters.EventAdapter
 import com.finalproject.calendar.adapters.EventClickListener
 import com.finalproject.calendar.enums.Repeticao
+import com.finalproject.calendar.models.AlertModel
 import com.finalproject.calendar.models.EventModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.card_event.*
 import kotlinx.android.synthetic.main.fragment_event.view.*
 
 class EventsFragment : Fragment(), EventClickListener {
@@ -22,12 +29,23 @@ class EventsFragment : Fragment(), EventClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_event, container,false)
         val activity = activity as Context
-        val testEvent1 = EventModel(null, "reuniao","22 janeiro as 22:00",null, null, Repeticao.ANUAL, null, 1)
-        val testEvent2 = EventModel(null, "reuniao","22 janeiro as 15:00",null, null, Repeticao.ANUAL, null, 2)
-        val events : MutableList<EventModel> = mutableListOf(testEvent1,testEvent2)
+        var auth = FirebaseAuth.getInstance()
+        var uid = auth.currentUser?.uid
+        var eventsList = mutableListOf<EventModel>()
+        val events =  FirebaseFirestore.getInstance().collection("events").whereEqualTo("uid",uid.toString()).get()
+            .addOnSuccessListener {eventss ->
+                for (event in eventss) {
+                    val tempEvent = EventModel(uid,event["title"].toString(),event["start"].toString(),event["end"].toString(),
+                        null,event["place"].toString(), (event["importance"] as Long).toInt(), (event["alert"] as Long).toInt()
+                    )
+                    eventsList.add(tempEvent)
+                }
+        }
+
         val recyclerView = view.events_recycler_view
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = EventAdapter(events,this)
+        recyclerView.adapter = EventAdapter(eventsList,this)
         return view
+
     }
 }
