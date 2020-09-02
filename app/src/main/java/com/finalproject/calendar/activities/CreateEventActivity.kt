@@ -6,8 +6,10 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.core.view.isVisible
 import com.finalproject.calendar.R
 import com.finalproject.calendar.enums.Repeticao
 import com.finalproject.calendar.models.EventModel
@@ -27,17 +29,57 @@ class CreateEventActivity : AppCompatActivity() {
     private var alert : Int = 0
     var auth = FirebaseAuth.getInstance()
     var uid = auth.currentUser?.uid
+    var edit = false
+
+    private lateinit var  test : EventModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_event)
 
+        test = intent.getSerializableExtra("event") as EventModel
         ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, Repeticao.values()).also { adapter->
             repeticao_dropdown.adapter = adapter
         }
+        if(intent.getStringExtra("edit")!= null) {
+            Log.d("TAG","oioioioi")
+            editStuff()
+        }
+
 
     }
 
+    fun editStuff() {
+
+        edit = true
+        var aux = findViewById<Button>(R.id.delete)
+        aux.isEnabled= true
+
+        val tb = findViewById<TextView>(R.id.toolbar_title)
+        val tt = findViewById<TextView>(R.id.event_title)
+        val sd = findViewById<TextView>(R.id.start_date)
+        val ed = findViewById<TextView>(R.id.end_date)
+        val al = findViewById<TextView>(R.id.alarm)
+        val pl = findViewById<TextView>(R.id.event_location_input)
+
+        tb.text = "Editar Evento"
+        tt.hint = test.title
+        title = test.title
+        sd.text = test.start
+        start = test.start
+        ed.text = test.end
+        end = test.end
+        pl.hint = test.place
+        place = test.place
+        al.text = test.alert.toString()
+        alert = test.alert
+        val square = findViewById<ImageView>(R.id.importance_square)
+        when (test.importance) {
+            0 -> square.setImageResource(R.drawable.ic_square_low)
+            1 -> square.setImageResource(R.drawable.ic_square_medium)
+            2 -> square.setImageResource(R.drawable.ic_square_high)
+        }
+    }
 
     fun setAlarmOnClick(view:View) {
         val builder = AlertDialog.Builder(this)
@@ -107,26 +149,43 @@ class CreateEventActivity : AppCompatActivity() {
     }
 
     fun saveEvent(view:View){
-        val titleEt = findViewById<EditText>(R.id.event_title)
-        val placeEt = findViewById<EditText>(R.id.event_location_input)
-        if(titleEt.text != null && placeEt.text != null){
-            title = titleEt.text.toString()
-            place = placeEt.text.toString()
-            if (!this::end.isInitialized) end = start
-            val spinner = findViewById<Spinner>(R.id.repeticao_dropdown)
-            val repeticao : Repeticao = spinner.selectedItem as Repeticao
-            val event = EventModel(this.uid,title,start,end,repeticao,place,importance,alert)
-            FirebaseFirestore.getInstance().collection("events").add(event)
+        if(edit == true) {
+            editEvent()
         }
-        val intent = Intent(this, MainActivity::class.java).apply {  }
-        startActivity(intent)
-        finish()
-
+        else{
+            val titleEt = findViewById<EditText>(R.id.event_title)
+            val placeEt = findViewById<EditText>(R.id.event_location_input)
+            if(titleEt.text != null && placeEt.text != null){
+                title = titleEt.text.toString()
+                place = placeEt.text.toString()
+                if (!this::end.isInitialized) end = start
+                val spinner = findViewById<Spinner>(R.id.repeticao_dropdown)
+                val repeticao : Repeticao = spinner.selectedItem as Repeticao
+                val event = EventModel(this.uid,null,title,start,end,repeticao,place,importance,alert)
+                FirebaseFirestore.getInstance().collection("events").add(event)
+            }
+            val intent = Intent(this, MainActivity::class.java).apply {  }
+            startActivity(intent)
+            finish()
+        }
     }
     fun cancelEvent(view:View){
         val intent = Intent(this, MainActivity::class.java).apply {  }
         startActivity(intent)
         finish()
+    }
+    fun editEvent(){
+        val spinner = findViewById<Spinner>(R.id.repeticao_dropdown)
+        val repeticao : Repeticao = spinner.selectedItem as Repeticao
+        FirebaseFirestore.getInstance().collection("events").document(test.id_event.toString()).update(mapOf("title" to title,"alert" to alert,
+            "end" to end, "start" to start, "place" to place, "importance" to importance,"repeticao" to repeticao))
+        val intent = Intent(this, MainActivity::class.java).apply {  }
+        startActivity(intent)
+        finish()
+    }
+    fun deleteEvent(view:View){
+        val id = intent.getStringExtra("id")
+        FirebaseFirestore.getInstance().collection("events").document(id).delete()
     }
 
 
