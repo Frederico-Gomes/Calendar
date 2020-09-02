@@ -22,6 +22,9 @@ import kotlinx.android.synthetic.main.card_event.*
 import kotlinx.android.synthetic.main.fragment_event.view.*
 
 class EventsFragment : Fragment(), EventClickListener {
+
+
+
     companion object{
         fun newIntance() = CalendarFragment()
     }
@@ -36,7 +39,7 @@ class EventsFragment : Fragment(), EventClickListener {
             .addOnSuccessListener {eventss ->
                 for (event in eventss) {
                     val tempEvent = EventModel(uid,event["title"].toString(),event["start"].toString(),event["end"].toString(),
-                        null,event["place"].toString(), (event["importance"] as Long).toInt(), (event["alert"] as Long).toInt()
+                        Repeticao.valueOf(event["repeticao"].toString()),event["place"].toString(), (event["importance"] as Long).toInt(), (event["alert"] as Long).toInt()
                     )
                     eventsList.add(tempEvent)
                 }

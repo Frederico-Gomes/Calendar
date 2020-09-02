@@ -17,7 +17,6 @@ import kotlinx.android.synthetic.main.activity_sign_up.*
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
-    private val loginService = LoginService()
     var user: User = User()
 
     override fun onCreate(savedInstanceState: Bundle?) {
