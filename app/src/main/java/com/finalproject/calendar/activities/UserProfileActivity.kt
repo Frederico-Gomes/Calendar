@@ -19,9 +19,14 @@ class UserProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_profile)
 
         auth = FirebaseAuth.getInstance()
+        val currentUser = auth?.currentUser
 
         this.display_name.isEnabled = false
+        this.display_name.setText(currentUser?.displayName)
+
         this.email.isEnabled = false
+        this.email.setText(currentUser?.email)
+
         this.password.isEnabled = false
         this.password_confirm.isEnabled = false
 
@@ -32,6 +37,11 @@ class UserProfileActivity : AppCompatActivity() {
         this.email.isEnabled = false
         this.password.isEnabled = true
         this.password_confirm.isEnabled = true
+
+        Toast.makeText(
+            baseContext, "Edição ativada!",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     fun updateData(view: View){
@@ -46,30 +56,46 @@ class UserProfileActivity : AppCompatActivity() {
             this.password.text.clear()
             this.password_confirm.text.clear()
             Toast.makeText(this, "As senhas devem ser iguais", Toast.LENGTH_LONG).show()
-        }
-        else if(password == null && displayName == null){
-            Toast.makeText(this, "Você deve preencher todos os campos", Toast.LENGTH_LONG).show()
+
         }
         else{
-            val profileUpdater = UserProfileChangeRequest.Builder()
-                .setDisplayName(displayName)
-                .build()
-
             var user = auth.currentUser
-            user?.updateProfile(profileUpdater)
-            user?.updatePassword(password)?.addOnCompleteListener{task ->
-                if (task.isSuccessful){
-                    Toast.makeText(
-                        baseContext, "Dados atualizados com sucesso!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    clearFields()
+            if(displayName != user?.displayName){
+                val profileUpdater = UserProfileChangeRequest.Builder()
+                    .setDisplayName(displayName)
+                    .build()
+                user?.updateProfile(profileUpdater)?.addOnCompleteListener{task ->
+                    if (task.isSuccessful){
+                        Toast.makeText(
+                            baseContext, "Dados atualizados com sucesso!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        clearFields()
+                    }
+                    else{
+                        Toast.makeText(
+                            baseContext, task.exception?.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
-                else{
-                    Toast.makeText(
-                        baseContext, "Eita! Deu ruim",
-                        Toast.LENGTH_LONG
-                    ).show()
+            }
+
+            if(password != "" && password != null){
+                user?.updatePassword(password)?.addOnCompleteListener{task ->
+                    if (task.isSuccessful){
+                        Toast.makeText(
+                            baseContext, "Senha atualizada!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        clearFields()
+                    }
+                    else{
+                        Toast.makeText(
+                            baseContext, task.exception?.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }

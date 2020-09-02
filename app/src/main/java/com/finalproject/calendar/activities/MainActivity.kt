@@ -31,5 +31,10 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, CreateEventActivity::class.java).putExtra("isNew", true)
         startActivity(intent)
     }
+
+    fun profileNavigate(view: View){
+        val intent = Intent(this, UserProfileActivity::class.java).putExtra("isNew", true)
+        startActivity(intent)
+    }
 }
 

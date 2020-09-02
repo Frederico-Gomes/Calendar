@@ -38,6 +38,7 @@ class EventsFragment : Fragment(), EventClickListener {
         val events =  FirebaseFirestore.getInstance().collection("events").whereEqualTo("uid",uid.toString()).get()
             .addOnSuccessListener {eventss ->
                 for (event in eventss) {
+
                     val tempEvent = EventModel(uid,event["title"].toString(),event["start"].toString(),event["end"].toString(),
                         Repeticao.valueOf(event["repeticao"].toString()),event["place"].toString(), (event["importance"] as Long).toInt(), (event["alert"] as Long).toInt()
                     )
