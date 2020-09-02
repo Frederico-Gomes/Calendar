@@ -56,8 +56,8 @@ class EventsFragment : Fragment(), EventClickListener {
     override fun onClick(event: EventModel, position: Int) {
         val activity = activity as Context
         val intent = Intent(getActivity(), CreateEventActivity::class.java)
+        intent.putExtra("edit","true")
         intent.putExtra("event",event)
-        intent.putExtra("edit","0")
         startActivity(intent)
     }
 

@@ -49,7 +49,7 @@
             android:id="@+id/start_date"
             android:layout_width="match_parent"
             android:layout_height=  "wrap_content"
-            android:text="Selecione a data de inicio"
+            android:hint="Selecione a data de inicio"
             android:textSize="18sp"
             android:onClick="setDateOnClick"
             />
@@ -64,7 +64,7 @@
             android:id="@+id/end_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Selecione a data de fim"
+            android:hint="Selecione a data de fim"
             android:onClick="setDateOnClick"
             android:textSize="18sp"
             />
@@ -116,6 +116,7 @@
                     android:id="@+id/importance_square"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:onClick="setImportanceOnClick"
                 android:src="@drawable/ic_square_low" />
             <TextView
                 android:layout_width="match_parent"
