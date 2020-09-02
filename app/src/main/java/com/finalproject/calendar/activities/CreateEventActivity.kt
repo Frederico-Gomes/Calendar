@@ -6,14 +6,17 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.core.view.isVisible
 import com.finalproject.calendar.R
 import com.finalproject.calendar.enums.Repeticao
 import com.finalproject.calendar.models.EventModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_create_event.*
+import java.lang.Exception
 import java.util.*
 
 class CreateEventActivity : AppCompatActivity() {
@@ -27,17 +30,57 @@ class CreateEventActivity : AppCompatActivity() {
     private var alert : Int = 0
     var auth = FirebaseAuth.getInstance()
     var uid = auth.currentUser?.uid
+    var edit = false
+
+    private var  test : EventModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_event)
 
+        test = intent.getSerializableExtra("event") as? EventModel
         ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, Repeticao.values()).also { adapter->
             repeticao_dropdown.adapter = adapter
         }
+        if(intent.getStringExtra("edit")!= null) {
+            Log.d("TAG","oioioioi")
+            editStuff()
+        }
+
 
     }
 
+    fun editStuff() {
+
+        edit = true
+        var aux = findViewById<Button>(R.id.delete)
+        aux.visibility = Button.VISIBLE
+
+        val tb = findViewById<TextView>(R.id.toolbar_title)
+        val tt = findViewById<TextView>(R.id.event_title)
+        val sd = findViewById<TextView>(R.id.start_date)
+        val ed = findViewById<TextView>(R.id.end_date)
+        val al = findViewById<TextView>(R.id.alarm)
+        val pl = findViewById<TextView>(R.id.event_location_input)
+
+        tb.text = "Editar Evento"
+        tt.hint = test?.title
+        title = test!!.title
+        sd.text = test?.start
+        start = test!!.start
+        ed.text = test?.end
+        end = test!!.end
+        pl.hint = test?.place
+        place = test?.place
+        al.text = test!!.alert.toString()
+        alert = test!!.alert
+        val square = findViewById<ImageView>(R.id.importance_square)
+        when (test?.importance) {
+            0 -> square.setImageResource(R.drawable.ic_square_low)
+            1 -> square.setImageResource(R.drawable.ic_square_medium)
+            2 -> square.setImageResource(R.drawable.ic_square_high)
+        }
+    }
 
     fun setAlarmOnClick(view:View) {
         val builder = AlertDialog.Builder(this)
@@ -106,27 +149,67 @@ class CreateEventActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun saveEvent(view:View){
-        val titleEt = findViewById<EditText>(R.id.event_title)
-        val placeEt = findViewById<EditText>(R.id.event_location_input)
-        if(titleEt.text != null && placeEt.text != null){
-            title = titleEt.text.toString()
-            place = placeEt.text.toString()
-            if (!this::end.isInitialized) end = start
+    fun saveEvent(view: View){
+        if(edit == true) {
             val spinner = findViewById<Spinner>(R.id.repeticao_dropdown)
             val repeticao : Repeticao = spinner.selectedItem as Repeticao
-            val event = EventModel(this.uid,title,start,end,repeticao,place,importance,alert)
-            FirebaseFirestore.getInstance().collection("events").add(event)
+            var document = FirebaseFirestore.getInstance().collection("events").document(test!!.id_event.toString())
+            document.update(
+                mapOf(
+                    "title" to title,"alert" to alert,
+                    "end" to end, "start" to start,
+                    "place" to place,
+                    "importance" to importance,
+                    "repeticao" to repeticao
+                )
+            ).addOnCompleteListener { task ->
+                if(task.isSuccessful){
+                    Toast.makeText(this, "Evento atualizado!", Toast.LENGTH_LONG)
+                    val intent = Intent(this, MainActivity::class.java).apply {  }
+                    startActivity(intent)
+                    finish()
+                }else{
+                    Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG)
+                }
+            }
         }
-        val intent = Intent(this, MainActivity::class.java).apply {  }
-        startActivity(intent)
-        finish()
-
+        else{
+            val titleEt = findViewById<EditText>(R.id.event_title)
+            val placeEt = findViewById<EditText>(R.id.event_location_input)
+            if(titleEt.text != null && placeEt.text != null){
+                title = titleEt.text.toString()
+                place = placeEt.text.toString()
+                if (!this::end.isInitialized) end = start
+                val spinner = findViewById<Spinner>(R.id.repeticao_dropdown)
+                val repeticao : Repeticao = spinner.selectedItem as Repeticao
+                val event = EventModel(this.uid,null,title,start,end,repeticao,place,importance,alert)
+                FirebaseFirestore.getInstance().collection("events").add(event)
+            }
+            val intent = Intent(this, MainActivity::class.java).apply {  }
+            startActivity(intent)
+            finish()
+        }
     }
     fun cancelEvent(view:View){
         val intent = Intent(this, MainActivity::class.java).apply {  }
         startActivity(intent)
         finish()
+    }
+
+    fun deleteEvent(view:View){
+        try {
+            var id: String = ""
+            id = test!!.id_event.toString()
+            FirebaseFirestore.getInstance().collection("events").document(id).delete().addOnSuccessListener {
+                Toast.makeText(this, "Evento excluido com sucesso!", Toast.LENGTH_LONG)
+                val intent = Intent(this, MainActivity::class.java).apply {  }
+                startActivity(intent)
+                finish()
+            }
+        }
+        catch (ex: Exception){
+            Log.w("ERROR: ", ex.message)
+        }
     }
 
 
