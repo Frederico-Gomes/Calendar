@@ -1,12 +1,10 @@
-package com.finalproject.calendar
+package com.finalproject.calendar.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import com.finalproject.calendar.activities.CreateEventActivity
-import com.finalproject.calendar.activities.MainActivity
-import com.finalproject.calendar.activities.SignUpActivity
+import com.finalproject.calendar.R
 import com.google.firebase.auth.FirebaseAuth
 
 class SplashActivity : AppCompatActivity() {

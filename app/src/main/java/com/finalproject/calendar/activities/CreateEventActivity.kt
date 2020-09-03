@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.*
 import androidx.core.view.isVisible
 import com.finalproject.calendar.R
+import com.finalproject.calendar.Utils
 import com.finalproject.calendar.enums.Repeticao
 import com.finalproject.calendar.models.EventModel
 import com.google.firebase.auth.FirebaseAuth
@@ -138,8 +139,6 @@ class CreateEventActivity : AppCompatActivity() {
         },hour,minute,true)
         timePickerDialog.show()
         dpd.show()
-
-
     }
 
     fun setImportanceOnClick(view:View) {
@@ -181,7 +180,7 @@ class CreateEventActivity : AppCompatActivity() {
                 ).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(this, "Evento atualizado!", Toast.LENGTH_LONG)
-                        val intent = Intent(this, MainActivity::class.java).apply { }
+                        val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         finish()
                     } else {
@@ -189,7 +188,7 @@ class CreateEventActivity : AppCompatActivity() {
                     }
                 }
             }else{
-                //todo deal with missing information properly
+                Toast.makeText(this, "Você deve fornecer todas as informações", Toast.LENGTH_LONG).show()
             }
         }
         else{
@@ -200,12 +199,14 @@ class CreateEventActivity : AppCompatActivity() {
                 val spinner = findViewById<Spinner>(R.id.repeticao_dropdown)
                 val repeticao : Repeticao = spinner.selectedItem as Repeticao
                 val event = EventModel(this.uid,null,title,start,end,repeticao,place,importance,alert)
-                FirebaseFirestore.getInstance().collection("events").add(event)
-                val intent = Intent(this, MainActivity::class.java).apply {  }
+                FirebaseFirestore.getInstance().collection("events").add(event).addOnSuccessListener { ref ->
+                    Utils.createAlarm(this, "Você tem uma nova atividade", event.title, event, 0)
+                }
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }else{
-                // todo deal with missing information properly
+                Toast.makeText(this, "Você deve fornecer todas as informações", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -222,7 +223,6 @@ class CreateEventActivity : AppCompatActivity() {
                 titleV.text.isEmpty()||
                 placeV.text.isEmpty()){
                 return false
-
             }
         }
         else{
