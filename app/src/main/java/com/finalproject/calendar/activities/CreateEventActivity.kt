@@ -1,22 +1,24 @@
 package com.finalproject.calendar.activities
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.*
+import android.content.Context
 import android.content.Intent
+import android.net.ParseException
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.core.view.isVisible
+
 import com.finalproject.calendar.R
+import com.finalproject.calendar.broadcastreceivers.EventBS
 import com.finalproject.calendar.enums.Repeticao
 import com.finalproject.calendar.models.EventModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_create_event.*
 import java.lang.Exception
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CreateEventActivity : AppCompatActivity() {
@@ -51,12 +53,12 @@ class CreateEventActivity : AppCompatActivity() {
 
     fun editStuff() {
         edit = true
+        Log.d("id",test.id_event.toString())
         changeLayoult(test ,"Editar Evento")
     }
 
 
     fun changeLayoult(event : EventModel, kind : String){
-        //todo adapt spiner to show event spinner, in database all data are ok
         findViewById<Button>(R.id.delete).visibility = Button.VISIBLE
         findViewById<TextView>(R.id.toolbar_title).text = kind
         findViewById<TextView>(R.id.event_title).hint = event.title
@@ -189,7 +191,7 @@ class CreateEventActivity : AppCompatActivity() {
                     }
                 }
             }else{
-                //todo deal with missing information properly
+                Toast.makeText(this, "Você deve fornecer todas as informações", Toast.LENGTH_LONG).show()
             }
         }
         else{
@@ -201,11 +203,12 @@ class CreateEventActivity : AppCompatActivity() {
                 val repeticao : Repeticao = spinner.selectedItem as Repeticao
                 val event = EventModel(this.uid,null,title,start,end,repeticao,place,importance,alert)
                 FirebaseFirestore.getInstance().collection("events").add(event)
+                setAlarm(event)
                 val intent = Intent(this, MainActivity::class.java).apply {  }
                 startActivity(intent)
                 finish()
             }else{
-                // todo deal with missing information properly
+                Toast.makeText(this, "Você deve fornecer todas as informações", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -240,10 +243,18 @@ class CreateEventActivity : AppCompatActivity() {
         finish()
     }
 
+    fun cancel_alarm(id : Int){
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent1 = Intent(this, EventBS::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this,id,intent1,PendingIntent.FLAG_UPDATE_CURRENT)
+        alarmManager.cancel(pendingIntent)
+    }
+
     fun deleteEvent(view:View){
         try {
             var id: String = ""
             id = test.id_event.toString()
+            cancel_alarm(test.title.hashCode())
             FirebaseFirestore.getInstance().collection("events").document(id).delete().addOnSuccessListener {
                 Toast.makeText(this, "Evento excluido com sucesso!", Toast.LENGTH_LONG)
                 val intent = Intent(this, MainActivity::class.java).apply {  }
@@ -256,6 +267,57 @@ class CreateEventActivity : AppCompatActivity() {
         }
     }
 
+    fun setAlarm(event : EventModel){
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent1 = Intent(this, EventBS::class.java)
+        intent1.putExtra("place",event.place)
+        intent1.putExtra("title",event.title)
+        intent1.putExtra("alert",event.alert)
+
+        intent1.putExtra("freq",event.repeticao.toString())
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            event.title.hashCode(),
+            intent1,
+            PendingIntent.FLAG_UPDATE_CURRENT)
+        val givenDateString = event.start
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm")
+        try {
+            val c =Calendar.getInstance()
+            c.setTime(sdf.parse(givenDateString))
+
+            when(event.alert){
+                0 -> {}
+                1 -> {
+                    c.add(Calendar.HOUR, -1)
+                    alarmManager.set(AlarmManager.RTC_WAKEUP,c.timeInMillis,pendingIntent)
+                }
+                2->{
+                    c.add(Calendar.DAY_OF_MONTH, -7)
+                    alarmManager.set(AlarmManager.RTC_WAKEUP,c.timeInMillis,pendingIntent)
+                }
+            }
+            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,timeInMilliseconds,AlarmManager.INTERVAL_HOUR,pendingIntent)
+            var freq: Long = 0
+            var aux : Long = 0
+            when(event.repeticao){
+                Repeticao.UNICA ->{}
+                Repeticao.HORARIO -> freq = AlarmManager.INTERVAL_HOUR
+                Repeticao.DIARIO -> freq = AlarmManager.INTERVAL_DAY
+                Repeticao.MENSAL -> freq = AlarmManager.INTERVAL_DAY * 30
+                Repeticao.ANUAL -> freq = AlarmManager.INTERVAL_DAY * 365
+            }
+            if(freq == aux){
+                alarmManager.set(AlarmManager.RTC_WAKEUP,c.timeInMillis,pendingIntent)
+            }
+            else{
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,c.timeInMillis,freq,pendingIntent)
+            }
+
+        } catch (e: ParseException) {
+            e.printStackTrace()
+        }
+    }
 
 
 
